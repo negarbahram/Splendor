@@ -1,6 +1,7 @@
 import java.util.Random;
 
 public class Card {
+
     private int type;
     // 1 is the easiest to buy and 3 is the hardest. 0 is prizeClaw.
 

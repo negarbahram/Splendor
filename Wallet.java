@@ -1,4 +1,5 @@
 public class Wallet {
+
     private int[] coinCount;
     // coinCount[coinType] = how many coins of type coinType exists in the wallet.
     // 0 : green
