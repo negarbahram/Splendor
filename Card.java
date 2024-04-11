@@ -5,7 +5,7 @@ public class Card {
     // 1 is the easiest to buy and 3 is the hardest. 0 is prizeClaw.
 
     private int[] prize;
-    // Prize[coinType] : how many coins of type coinType should be paid to buy this card
+    // Prize[coinType] : how many coins of type coinType should be paid to buy this card.
 
     private int value;
     // What type of permanent discount will be considered for the owner :
@@ -111,20 +111,23 @@ public class Card {
 
         Random rand = new Random();
 
+        int point = 0;
         switch (type) {
             case 1 : // FirstClass
-                return rand.nextInt(2);
+                point = rand.nextInt(2);
                 break;
             case 2 : // MiddleClass
-                return rand.nextInt(3) + 2;
+                point = rand.nextInt(3) + 2;
                 break;
             case 3 : // FinalClass
-                return rand.nextInt(3) + 3;
+                point = rand.nextInt(3) + 3;
                 break;
             case 0 : // PrizeClaw
-                return rand.nextInt(2) + 3;
+                point = rand.nextInt(2) + 3;
                 break;
         }
+
+        return point;
     }
 }
 
