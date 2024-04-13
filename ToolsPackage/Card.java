@@ -7,7 +7,7 @@ public class Card {
     public int type;
     // 1 is the easiest to buy and 3 is the hardest. 0 is prizeClaw.
 
-    public int[] prize;
+    public int[] price;
     // Prize[coinType] : how many coins of type coinType should be paid to buy this card.
 
     public int value;
@@ -22,18 +22,11 @@ public class Card {
     // How much points will the owner get of buying this card
 
     // Constructor
-    private Card(int type, int[] prize, int value, int point) {
+    private Card(int type, int[] price, int value, int point) {
 
         this.type = type;
-        this.prize = prize;
+        this.price = price;
         this.value = value;
-        this.point = point;
-    }
-
-    private Card(int type, int[] prize, int point) {
-
-        this.type = type;
-        this.prize = prize;
         this.point = point;
     }
 
@@ -45,7 +38,7 @@ public class Card {
             if (type > 0) // The card is not prizeClaw
                 cardList[i] = new Card(type, generatePrize(type), generateValue(type), generatePoint(type));
             else
-                cardList[i] = new Card(type, generatePrize(type), generatePoint(type));
+                cardList[i] = new Card(type, generatePrize(type), -1, generatePoint(type));
 
         return cardList;
     }

@@ -25,7 +25,7 @@ public class Player {
         Coin[] coins = new Coin[7 + 3];
         // Making a list of coins with their count to creat a wallet.
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i <= 5; i++)
             coins[i] = new Coin(0);
         // 0 : green
         // 1 : white
