@@ -4,6 +4,8 @@ import BoardPackage.PlayerPackage.Player;
 import BoardPackage.StorePackage.Store;
 import ToolsPackage.Coin;
 
+import java.util.Scanner;
+
 public class Board {
 
     public Store store;
@@ -45,5 +47,57 @@ public class Board {
 
         turn = 0;
         // Set turn to zero, so that player one is the first to move.
+    }
+
+    public int whoWins() {
+
+        if (player[0].points >= 15)
+            return 0;
+
+        if (player[1].points >= 15)
+            return 1;
+
+        return -1;
+    }
+
+    public boolean nextMoveProcess(int nextMove) {
+
+        Scanner input = new Scanner(System.in);
+
+        switch (nextMove) {
+            case 0 :
+
+                nextMove = input.nextInt(); // Coin Type
+
+                if (!slotMachines.getCoinFirstType(nextMove))
+                    return false;
+
+                player[turn].wallet.coin[nextMove].count += 2;
+                return true;
+            case 1 :
+
+                nextMove = input.nextInt();
+                int cnt = 0;
+
+                while (nextMove != 9 && cnt < 3) {
+
+                    if (slotMachines.getCoinSecondType(nextMove)) {
+                        player[turn].wallet.coin[nextMove].count++;
+                        cnt++;
+                    }
+
+                    nextMove = input.nextInt();
+                }
+                return true;
+            case 2 :
+
+                int level = input.nextInt();
+                nextMove = input.nextInt();
+
+                if (! player[turn].wallet.isThereEnoughCoin(store.cards[level][nextMove].price))
+                    return false;
+                
+                return true;
+        }
     }
 }

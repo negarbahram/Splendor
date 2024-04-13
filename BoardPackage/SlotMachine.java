@@ -27,10 +27,12 @@ public class SlotMachine extends Wallet {
         return true;
     }
 
-    public void getCoinSecondType(int[] coinType) {
+    public boolean getCoinSecondType(int coinType) {
 
-        for (int i = 0; i < 3; i++)
-            coin[coinType[i]].count--;
+        if (coin[coinType].count == 0)
+            return false;
 
+        coin[coinType].count--;
+        return true;
     }
 }

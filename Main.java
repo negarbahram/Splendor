@@ -76,5 +76,14 @@ public class Main {
             System.out.println("################");
         }
          */
+        while (board.whoWins() == -1) {
+            int nextMove = input.nextInt();
+            // 0 : getting coins type 1
+            // 1 : getting coins type 2
+            // 2 : buy card
+            // 3 : reserve card
+            if (board.nextMoveProcess(nextMove))
+                board.turn ^= 1;
+        }
     }
 }
