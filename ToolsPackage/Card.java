@@ -1,14 +1,16 @@
+package ToolsPackage;
+
 import java.util.Random;
 
 public class Card {
 
-    private int type;
+    public int type;
     // 1 is the easiest to buy and 3 is the hardest. 0 is prizeClaw.
 
-    private int[] prize;
+    public int[] prize;
     // Prize[coinType] : how many coins of type coinType should be paid to buy this card.
 
-    private int value;
+    public int value;
     // What type of permanent discount will be considered for the owner :
     // 0 : green
     // 1 : white
@@ -16,7 +18,7 @@ public class Card {
     // 3 : blue
     // 4 : red
 
-    private int point;
+    public int point;
     // How much points will the owner get of buying this card
 
     // Constructor
@@ -33,27 +35,6 @@ public class Card {
         this.type = type;
         this.prize = prize;
         this.point = point;
-    }
-
-    // Getters :
-    public int getType() {
-
-        return type;
-    }
-
-    public int[] getPrize() {
-
-        return prize;
-    }
-
-    public int getValue() {
-
-        return value;
-    }
-
-    public int getPoint() {
-
-        return point;
     }
 
     public static Card[] generateCards(int type, int count) {

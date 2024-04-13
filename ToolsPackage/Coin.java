@@ -1,3 +1,5 @@
+package ToolsPackage;
+
 public class Coin {
 
     // 0 : green

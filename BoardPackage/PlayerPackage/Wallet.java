@@ -1,3 +1,7 @@
+package BoardPackage.PlayerPackage;
+
+import ToolsPackage.Coin;
+
 public class Wallet {
 
     public Coin[] coin;

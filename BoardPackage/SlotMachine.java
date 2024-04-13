@@ -1,5 +1,17 @@
+package BoardPackage;
+
+import BoardPackage.PlayerPackage.Wallet;
+import ToolsPackage.Coin;
 
 public class SlotMachine extends Wallet {
+
+    // coin[coinType].count = how many coins of type coinType exists in the wallet.
+    // 0 : green
+    // 1 : white
+    // 2 : black
+    // 3 : blue
+    // 4 : red
+    // 5 : gold
 
     public SlotMachine(Coin[] coin) {
 
