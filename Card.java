@@ -56,7 +56,7 @@ public class Card {
         return point;
     }
 
-    public Card[] generateCards(int type, int count) {
+    public static Card[] generateCards(int type, int count) {
 
         Card[] cardList = new Card[20 + 10];
 
@@ -69,7 +69,7 @@ public class Card {
         return cardList;
     }
 
-    private int[] generatePrize(int type) {
+    private static int[] generatePrize(int type) {
 
         int[] prize = new int[10 + 5];
 
@@ -101,14 +101,14 @@ public class Card {
         return prize;
     }
 
-    private int generateValue(int type) {
+    private static int generateValue(int type) {
 
         Random rand = new Random();
 
         return rand.nextInt(5);
     }
 
-    private int generatePoint(int type) {
+    private static int generatePoint(int type) {
 
         Random rand = new Random();
 
