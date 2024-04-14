@@ -60,7 +60,7 @@ public class Board {
         return -1;
     }
 
-    public boolean nextMoveProcess(int nextMove) {
+  /*  public boolean nextMoveProcess(int nextMove) {
 
         Scanner input = new Scanner(System.in);
 
@@ -96,8 +96,10 @@ public class Board {
 
                 if (! player[turn].wallet.isThereEnoughCoin(store.cards[level][nextMove].price))
                     return false;
-                
+
                 return true;
         }
     }
+
+   */
 }

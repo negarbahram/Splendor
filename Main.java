@@ -1,5 +1,6 @@
 import BoardPackage.Board;
 
+import javax.swing.*;
 import java.util.Scanner;
 
 public class Main {
@@ -76,7 +77,14 @@ public class Main {
             System.out.println("################");
         }
          */
-        while (board.whoWins() == -1) {
+
+        JFrame frame = new JFrame();
+        frame.setTitle("Splendor");
+        frame.setSize(1300, 850);
+        frame.setResizable(false);
+        frame.setVisible(true);
+
+       /* while (board.whoWins() == -1) {
             int nextMove = input.nextInt();
             // 0 : getting coins type 1
             // 1 : getting coins type 2
@@ -85,5 +93,7 @@ public class Main {
             if (board.nextMoveProcess(nextMove))
                 board.turn ^= 1;
         }
+
+        */
     }
 }
