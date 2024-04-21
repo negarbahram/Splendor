@@ -1,4 +1,5 @@
 import BoardPackage.Board;
+import GraphicPackage.StartingWindow;
 
 import javax.swing.*;
 import java.util.Scanner;
@@ -6,13 +7,14 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner input = new Scanner(System.in);
+        StartingWindow startingWindow = new StartingWindow();
 
-        String firstPlayer = input.next();
-        String secondPlayer = input.next();
+        while (startingWindow.secondPlayerName == null)
+            System.out.println("Waiting for players to enter their names...");
+
+        Board board = new Board(startingWindow.firstPlayerName, startingWindow.secondPlayerName);
 
 
-        Board board = new Board(firstPlayer, secondPlayer);
 
         // Check store : done!
         /*
@@ -76,24 +78,6 @@ public class Main {
             }
             System.out.println("################");
         }
-         */
-
-        JFrame frame = new JFrame();
-        frame.setTitle("Splendor");
-        frame.setSize(1300, 850);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-       /* while (board.whoWins() == -1) {
-            int nextMove = input.nextInt();
-            // 0 : getting coins type 1
-            // 1 : getting coins type 2
-            // 2 : buy card
-            // 3 : reserve card
-            if (board.nextMoveProcess(nextMove))
-                board.turn ^= 1;
-        }
-
         */
     }
 }
