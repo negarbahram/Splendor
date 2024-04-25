@@ -16,6 +16,7 @@ public class GameWindow extends JFrame implements ActionListener {
     Board board;
 
     JButton[][] cardButton = new JButton[5 + 2][5 + 2];
+    JButton[] coinButton = new JButton[7 + 2];
 
     public GameWindow() {
         board = new Board("neg", "nia");
@@ -25,57 +26,29 @@ public class GameWindow extends JFrame implements ActionListener {
         this.setSize(1475, 850);
         this.setLayout(null);
 
-        for (int i = 0; i < board.store.cardCount[0]; i++) {
-            cardButton[0][i] = new JButton();
-            cardButton[0][i].setBounds(185 + i * 190, 50, 176, 176);
-            drawPrizeClawCard(board.store.cards[0][i], cardButton[0][i]);
-            this.add(cardButton[0][i]);
-        }
+        JPanel storePanel = new JPanel(null);
+        storePanel.setBounds(10, 10, 745, 800);
+        storePanel.setBackground(Color.PINK);
+        drawStore(storePanel);
+        this.add(storePanel);
 
-        JButton firstLevelCoverPanel = new JButton();
-        firstLevelCoverPanel.setBounds(15, 250, 132, 176);
-        ImageIcon Chip = new ImageIcon(getClass().getResource("resources/blackChip44.jpg"));
-        JLabel firstLevelCoreLabel = new JLabel(Chip);
-        firstLevelCoverPanel.add(firstLevelCoreLabel);
-        firstLevelCoreLabel.setBounds(5, 5, 44, 44);
-        firstLevelCoverPanel.setVisible(true);
-        this.add(firstLevelCoverPanel);
+        JPanel slotMachinesPanel = new JPanel(null);
+        slotMachinesPanel.setBounds(760, 10, 120, 800);
+        slotMachinesPanel.setBackground(Color.orange);
+        drawSlotMachines(slotMachinesPanel);
+        this.add(slotMachinesPanel);
 
-        for (int i = 0; i < 4; i++) {
-            cardButton[1][i] = new JButton();
-            cardButton[1][i].setBounds(180 + i * 145, 250, 132, 176);
-            drawCard(board.store.cards[1][i], cardButton[1][i]);
-            this.add(cardButton[1][i]);
-        }
+        JPanel firstPlayerPanel = new JPanel(null);
+        firstPlayerPanel.setBounds(886, 10, 575, 397);
+        firstPlayerPanel.setBackground(Color.green);
+        drawPlayerTable(0, firstPlayerPanel);
+        this.add(firstPlayerPanel);
 
-        JButton secondLevelCover = new JButton();
-        secondLevelCover.setBounds(15, 440, 132, 176);
-        this.add(secondLevelCover);
-
-        for (int i = 0; i < 4; i++) {
-            cardButton[2][i] = new JButton();
-            cardButton[2][i].setBounds(180 + i * 145, 440, 132, 176);
-            drawCard(board.store.cards[2][i], cardButton[2][i]);
-            this.add(cardButton[2][i]);
-        }
-
-        JButton thirdLevelCover = new JButton();
-        thirdLevelCover.setBounds(15, 630, 132, 176);
-        this.add(thirdLevelCover);
-
-        JButton[] thirdLevel = new JButton[4 + 2];
-        for (int i = 0; i < 4; i++) {
-            cardButton[3][i] = new JButton();
-            cardButton[3][i].setBounds(180 + i * 145, 630, 132, 176);
-            drawCard(board.store.cards[3][i], cardButton[3][i]);
-            this.add(cardButton[3][i]);
-        }
-
-        /*
-        JButton secondPlayerCards = new JButton();
-        secondPlayerCards.setBounds(20, 660, 75, 100);
-        this.add(secondPlayerCards);
-         */
+        JPanel secondPlayerPanel = new JPanel(null);
+        secondPlayerPanel.setBounds(886, 413, 575, 397);
+        secondPlayerPanel.setBackground(Color.blue);
+        drawPlayerTable(1, secondPlayerPanel);
+        this.add(secondPlayerPanel);
 
         this.setVisible(true);
     }
@@ -83,6 +56,102 @@ public class GameWindow extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    private void drawPlayerTable(int playerId, JPanel panel) {
+
+    }
+
+    private void drawSlotMachines(JPanel panel) {
+        JLabel storeTextLabel = new JLabel("Slot Machines");
+        storeTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
+        storeTextLabel.setBounds(10, 0, 120, 120);
+        panel.add(storeTextLabel);
+
+        ImageIcon[] slotChip = new ImageIcon[7 + 2];
+
+        slotChip[0] = new ImageIcon(getClass().getResource("resources/greenChip100.jpg"));
+        slotChip[1] = new ImageIcon(getClass().getResource("resources/whiteChip100.jpg"));
+        slotChip[2] = new ImageIcon(getClass().getResource("resources/blackChip100.jpg"));
+        slotChip[3] = new ImageIcon(getClass().getResource("resources/blueChip100.jpg"));
+        slotChip[4] = new ImageIcon(getClass().getResource("resources/redChip100.jpg"));
+        slotChip[5] = new ImageIcon(getClass().getResource("resources/goldChip100.jpg"));
+
+        int Y = 240;
+        for (int i = 0; i < 5; i++) {
+            coinButton[i] = new JButton();
+            coinButton[i].setBounds(5, Y, 110, 110);
+            coinButton[i].setLayout(null);
+            JLabel slotChipLabel = new JLabel(slotChip[i]);
+            JLabel slotMachinesCoinCountTextLabel = new JLabel(Integer.toString(board.slotMachines.coin[i].count));
+            slotMachinesCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            coinButton[i].add(slotMachinesCoinCountTextLabel);
+            coinButton[i].add(slotChipLabel);
+            slotChipLabel.setBounds(5, 5, 100, 100);
+            slotMachinesCoinCountTextLabel.setBounds(47, 5, 100, 100);
+            panel.add(coinButton[i]);
+            Y += 111;
+        }
+
+        coinButton[5] = new JButton();
+        coinButton[5].setBounds(5, 106, 110, 110);
+        coinButton[5].setLayout(null);
+        JLabel slotChipLabel = new JLabel(slotChip[5]);
+        JLabel slotMachinesCoinCountTextLabel = new JLabel(Integer.toString(board.slotMachines.coin[5].count));
+        slotMachinesCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        coinButton[5].add(slotMachinesCoinCountTextLabel);
+        coinButton[5].add(slotChipLabel);
+        slotChipLabel.setBounds(5, 5, 100, 100);
+        slotMachinesCoinCountTextLabel.setBounds(47, 5, 100, 100);
+        panel.add(coinButton[5]);
+    }
+
+    private void drawStore(JPanel panel) {
+        JLabel storeTextLabel = new JLabel("Store");
+        storeTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 35));
+        storeTextLabel.setBounds(20, 15, 200, 200);
+        panel.add(storeTextLabel);
+
+        for (int i = 0; i < board.store.cardCount[0]; i++) {
+            cardButton[0][i] = new JButton();
+            cardButton[0][i].setBounds(175 + i * 190, 40, 176, 176);
+            drawPrizeClawCard(board.store.cards[0][i], cardButton[0][i]);
+            panel.add(cardButton[0][i]);
+        }
+
+        JButton firstLevelCover = new JButton();
+        firstLevelCover.setBounds(5, 240, 132, 176);
+        panel.add(firstLevelCover);
+
+        for (int i = 0; i < 4; i++) {
+            cardButton[1][i] = new JButton();
+            cardButton[1][i].setBounds(170 + i * 145, 240, 132, 176);
+            drawCard(board.store.cards[1][i], cardButton[1][i]);
+            panel.add(cardButton[1][i]);
+        }
+
+        JButton secondLevelCover = new JButton();
+        secondLevelCover.setBounds(5, 430, 132, 176);
+        panel.add(secondLevelCover);
+
+        for (int i = 0; i < 4; i++) {
+            cardButton[2][i] = new JButton();
+            cardButton[2][i].setBounds(170 + i * 145, 430, 132, 176);
+            drawCard(board.store.cards[2][i], cardButton[2][i]);
+            panel.add(cardButton[2][i]);
+        }
+
+        JButton thirdLevelCover = new JButton();
+        thirdLevelCover.setBounds(5, 620, 132, 176);
+        panel.add(thirdLevelCover);
+
+        JButton[] thirdLevel = new JButton[4 + 2];
+        for (int i = 0; i < 4; i++) {
+            cardButton[3][i] = new JButton();
+            cardButton[3][i].setBounds(170 + i * 145, 620, 132, 176);
+            drawCard(board.store.cards[3][i], cardButton[3][i]);
+            panel.add(cardButton[3][i]);
+        }
     }
 
     private void drawPrizeClawCard(Card card, JButton button) {
