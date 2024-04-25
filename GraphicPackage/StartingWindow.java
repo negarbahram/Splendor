@@ -43,6 +43,7 @@ public class StartingWindow extends JFrame implements ActionListener {
         this.add(startButton);
 
         this.setVisible(true);
+
     }
 
     @Override
