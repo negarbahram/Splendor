@@ -2,6 +2,7 @@ package BoardPackage;
 
 import BoardPackage.PlayerPackage.Player;
 import BoardPackage.StorePackage.Store;
+import ToolsPackage.Card;
 import ToolsPackage.Coin;
 
 import java.util.Scanner;
@@ -15,6 +16,25 @@ public class Board {
     public Player[] player;
 
     public int turn;
+
+    public int state;
+    // 0 : player is about to choose between getting coins or cards or reserve a card.
+    // 1 : player is going to choose a card to buy.
+    // 2 : player is going to pay for a card they have chosen.
+    // 3 : player is going to get coins from the slot machine.
+    // 4 : player is going to reserve a card.
+    // 5 : player is going to buy a reserved card.
+    // 6 : game has ended.
+
+    public int walletCoinCnt;
+
+    public int[] walletForCoins;
+
+    public int[] walletForCards;
+
+    public int chosenCardLevel;
+
+    public int chosenCardId;
 
     public Board(String firstPlayer, String secondPlayer) {
 
@@ -47,6 +67,12 @@ public class Board {
 
         turn = 0;
         // Set turn to zero, so that player one is the first to move.
+
+        state = 0;
+
+        walletForCoins = new int[5 + 2];
+
+        walletForCards = new int[5 + 2];
     }
 
     public int whoWins() {
@@ -60,46 +86,50 @@ public class Board {
         return -1;
     }
 
-  /*  public boolean nextMoveProcess(int nextMove) {
+    public void getPrizeClaw(int id) {
+        player[turn].addPrizeClaw(store.cards[0][id]);
+        store.removePrizeClaw(id);
+    }
 
-        Scanner input = new Scanner(System.in);
+    public void getCard() {
+        player[turn].payThePrice(walletForCoins);
+        player[turn].addCard(store.cards[chosenCardLevel][chosenCardId]);
+        store.removeCard(chosenCardLevel, chosenCardId);
+        slotMachines.addCoin(walletForCoins);
+    }
 
-        switch (nextMove) {
-            case 0 :
+    public void emptyWallet() {
 
-                nextMove = input.nextInt(); // Coin Type
-
-                if (!slotMachines.getCoinFirstType(nextMove))
-                    return false;
-
-                player[turn].wallet.coin[nextMove].count += 2;
-                return true;
-            case 1 :
-
-                nextMove = input.nextInt();
-                int cnt = 0;
-
-                while (nextMove != 9 && cnt < 3) {
-
-                    if (slotMachines.getCoinSecondType(nextMove)) {
-                        player[turn].wallet.coin[nextMove].count++;
-                        cnt++;
-                    }
-
-                    nextMove = input.nextInt();
-                }
-                return true;
-            case 2 :
-
-                int level = input.nextInt();
-                nextMove = input.nextInt();
-
-                if (! player[turn].wallet.isThereEnoughCoin(store.cards[level][nextMove].price))
-                    return false;
-
-                return true;
+        walletCoinCnt = 0;
+        for (int i = 0; i <= 5; i++) {
+            walletForCoins[i] = 0;
+            walletForCards[i] = 0;
         }
     }
 
-   */
+    public boolean canBePaid() {
+
+        int goldCoinsInUse = 0;
+        for (int i = 0; i < 5; i++)
+            if (walletForCoins[i] + walletForCards[i] < store.cards[chosenCardLevel][chosenCardId].price[i])
+                goldCoinsInUse += store.cards[chosenCardLevel][chosenCardId].price[i] - walletForCoins[i] - walletForCards[i];
+
+        return goldCoinsInUse <= walletForCoins[5]? true: false;
+    }
+
+    public void getCoins() {
+        player[turn].addCoins(walletForCoins);
+        slotMachines.removeCoins(walletForCoins);
+    }
+
+    public void getReserve() {
+        player[turn].addReserve(store.cards[chosenCardLevel][chosenCardId]);
+        store.removeCard(chosenCardLevel, chosenCardId);
+        emptyWallet();
+        if (slotMachines.validCoin(walletForCoins, walletCoinCnt, 5))
+            walletForCoins[5]++;
+        player[turn].addCoins(walletForCoins);
+        slotMachines.removeCoins(walletForCoins);
+    }
+
 }

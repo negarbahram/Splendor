@@ -16,6 +16,13 @@ public class Player {
     public Card[][] cards;
     // cards[cardValue] : List of cards with the value of cardValue.
 
+    public int prizeClawCount;
+    public Card[] prizeClaw;
+
+    public int reserveCount;
+
+    public Card[] reserve;
+
     public Player(String name) {
 
         this.name = name;
@@ -44,5 +51,45 @@ public class Player {
             cardCount[i] = 0;
 
         cards = new Card[7 + 3][50 + 10];
+
+        prizeClawCount = 0;
+
+        prizeClaw = new Card[5 + 2];
+
+        reserveCount = 0;
+
+        reserve = new Card[5 + 2];
+    }
+
+    public boolean isThereEnoughCards(int[] prize) {
+
+        for (int i = 0; i < 5; i++)
+            if (cardCount[i] < prize[i])
+                return false;
+
+        return true;
+    }
+
+    public void addPrizeClaw(Card prizeClaw) {
+        this.prizeClaw[prizeClawCount++] = prizeClaw;
+    }
+
+    public void payThePrice(int[] wallet) {
+        for (int i = 0; i <= 5; i++)
+            this.wallet.coin[i].count -= wallet[i];
+    }
+
+    public void addCard(Card card) {
+        cards[card.value][cardCount[card.value]] = card;
+        cardCount[card.value]++;
+    }
+
+    public void addCoins(int[] wallet) {
+        for (int i = 0; i <= 5; i++)
+            this.wallet.coin[i].count += wallet[i];
+    }
+
+    public void addReserve(Card card) {
+
     }
 }

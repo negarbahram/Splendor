@@ -18,12 +18,12 @@ public class Wallet {
         this.coin = coin;
     }
 
-    public boolean isThereEnoughCoin(int[] prize) {
+    public boolean isThereEnoughCoins(int[] price) {
 
         int goldCoinsInUse = 0;
         for (int i = 0; i < 5; i++)
-            if (coin[i].count < prize[i])
-                goldCoinsInUse += prize[i] - coin[i].count;
+            if (coin[i].count < price[i])
+                goldCoinsInUse += price[i] - coin[i].count;
 
         return goldCoinsInUse <= coin[5].count? true: false;
     }

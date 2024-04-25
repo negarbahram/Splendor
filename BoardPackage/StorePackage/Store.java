@@ -24,4 +24,16 @@ public class Store {
         for (int i = 0; i <= 3; i++)
             cards[i] = Card.generateCards(i, cardCount[i]);
     }
+
+    public void removePrizeClaw(int id) {
+        cardCount[0]--;
+        for (int i = id; i < cardCount[0]; i++)
+            cards[0][i] = cards[0][i + 1];
+    }
+
+    public void removeCard(int level, int id) {
+        cardCount[level]--;
+        for (int i = id; i < cardCount[level]; i++)
+            cards[level][i] = cards[level][i + 1];
+    }
 }

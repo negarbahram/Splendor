@@ -35,4 +35,72 @@ public class SlotMachine extends Wallet {
         coin[coinType].count--;
         return true;
     }
+
+    public void addCoin(int[] wallet) {
+        for (int i = 0; i <= 5; i++)
+            coin[i].count += wallet[i];
+    }
+
+    public boolean readyToGet(int[] wallet, int count) {
+
+        if (count == 3)
+            return true;
+
+        if (count == 0) {
+            for (int i = 0; i < 5; i++)
+                if (coin[i].count - wallet[i] > 0)
+                    return false;
+            return true;
+        }
+
+        if (count == 1) {
+
+            int isThereAnyMore = 0;
+            for (int i = 0; i < 5; i++)
+                if (coin[i].count - wallet[i] > 0)
+                    isThereAnyMore++;
+
+            if (isThereAnyMore > 1)
+                return false;
+            else
+                return true;
+        }
+
+        int typeCount = 0;
+        for (int i = 0; i < 5; i++)
+            if (wallet[i] > 0)
+                typeCount++;
+
+        if (typeCount == 1)
+            return true;
+
+        int isThereAnyMore = 0;
+        for (int i = 0; i < 5; i++)
+            if (coin[i].count - wallet[i] > 0)
+                isThereAnyMore++;
+
+        if (isThereAnyMore > 2)
+            return false;
+
+        return true;
+    }
+
+    public void removeCoins(int[] wallet) {
+        for (int i = 0; i <= 5; i++)
+            coin[i].count -= wallet[i];
+    }
+
+    public boolean validCoin(int[] wallet, int count, int type) {
+        if (coin[type].count - wallet[type] == 0)
+            return false;
+
+        if (count == 0 || count == 1)
+            return true;
+
+        for (int i = 0; i <= 5; i++)
+            if (wallet[i] > 0 && i == type)
+                return false;
+
+        return true;
+    }
 }
