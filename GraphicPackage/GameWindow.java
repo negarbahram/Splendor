@@ -18,6 +18,10 @@ public class GameWindow extends JFrame implements ActionListener {
     JButton[][] cardButton = new JButton[5 + 2][5 + 2];
     JButton[] coinButton = new JButton[7 + 2];
 
+    JButton[][] playerCoins = new JButton[2 + 1][7 + 2];
+
+    JButton[][][] playerCards = new JButton[2 + 1][7 + 2][47 + 5];
+
     JPanel storePanel;
 
     JButton storeButton;
@@ -222,6 +226,7 @@ public class GameWindow extends JFrame implements ActionListener {
 
                             break;
                         }
+
                         board.walletCoinCnt++;
                         board.walletForCoins[i]++;
                     }
@@ -258,6 +263,126 @@ public class GameWindow extends JFrame implements ActionListener {
 
         }
 
+        reDraw();
+
+    }
+
+    private void drawPlayerTable(int playerId, JPanel panel) {
+
+        drawPlayerCoins(playerId, panel);
+        drawPlayerCards(playerId, panel);
+    }
+
+    private void drawPlayerCards(int playerId, JPanel panel) {
+        int X = 3;
+        for (int i = 0; i < 5; i++) {
+            int Y = 100;
+            for (int j = 0; j < board.player[playerId].cardCount[i]; j++) {
+                playerCards[playerId][i][j] = new JButton();
+                playerCards[playerId][i][j].addActionListener(this);
+                playerCards[playerId][i][j].setBounds(X, Y, 90, 120);
+                drawCardForPlayer(board.player[playerId].cards[i][j], playerCards[playerId][i][j]);
+                panel.add(playerCards[playerId][i][j]);
+            }
+        }
+
+    }
+
+    private void drawCardForPlayer(Card card, JButton button) {
+        button.setLayout(null);
+        drawPointForPayer(card, button);
+        drawPriceForPlayer(card, button);
+        drawValueForPlayer(card, button);
+    }
+
+    void drawPointForPayer(Card card, JButton button) {
+        JLabel pontLabel = new JLabel(Integer.toString(card.point));
+        pontLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
+        button.add(pontLabel);
+        pontLabel.setBounds(0, 0, 50, 50);
+    }
+
+    private void drawPriceForPlayer(Card card, JButton button) {
+        int lastX = 5, lastY = 110;
+
+        ImageIcon[] priceChip = new ImageIcon[7 + 2];
+
+        priceChip[0] = new ImageIcon(getClass().getResource("resources/greenChip15.jpg"));
+        priceChip[1] = new ImageIcon(getClass().getResource("resources/whiteChip15.jpg"));
+        priceChip[2] = new ImageIcon(getClass().getResource("resources/blackChip15.jpg"));
+        priceChip[3] = new ImageIcon(getClass().getResource("resources/blueChip15.jpg"));
+        priceChip[4] = new ImageIcon(getClass().getResource("resources/redChip15.jpg"));
+
+
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < card.price[i]; j++) {
+                JLabel priceLabel = new JLabel(priceChip[i]);
+                button.add(priceLabel);
+                priceLabel.setBounds(lastX, lastY, 15, 15);
+                lastX += 16;
+                if (lastX >= 75) {
+                    lastX = 10;
+                    lastY -= 16;
+                }
+            }
+    }
+
+    private void drawValueForPlayer(Card card, JButton button) {
+        ImageIcon valueChip = null;
+        switch (card.value) {
+            case 0:
+                valueChip = new ImageIcon(getClass().getResource("resources/greenChip33.jpg"));
+                break;
+            case 1:
+                valueChip = new ImageIcon(getClass().getResource("resources/whiteChip33.jpg"));
+                break;
+            case 2:
+                valueChip = new ImageIcon(getClass().getResource("resources/blackChip33.jpg"));
+                break;
+            case 3:
+                valueChip = new ImageIcon(getClass().getResource("resources/blueChip33.jpg"));
+                break;
+            case 4:
+                valueChip = new ImageIcon(getClass().getResource("resources/redChip33.jpg"));
+                break;
+        }
+
+        JLabel valeLabel = new JLabel(valueChip);
+        button.add(valeLabel);
+        valeLabel.setBounds(53, 5, 33, 33);
+    }
+
+    private void drawPlayerCoins(int playerId, JPanel panel) {
+        ImageIcon[] walletChip = new ImageIcon[7 + 2];
+
+        walletChip[0] = new ImageIcon(getClass().getResource("resources/greenChip75.jpg"));
+        walletChip[1] = new ImageIcon(getClass().getResource("resources/whiteChip75.jpg"));
+        walletChip[2] = new ImageIcon(getClass().getResource("resources/blackChip75.jpg"));
+        walletChip[3] = new ImageIcon(getClass().getResource("resources/blueChip75.jpg"));
+        walletChip[4] = new ImageIcon(getClass().getResource("resources/redChip75.jpg"));
+        walletChip[5] = new ImageIcon(getClass().getResource("resources/goldChip75.jpg"));
+
+        int X = 7;
+        for (int i = 0; i <= 5; i++) {
+            playerCoins[playerId][i] = new JButton();
+            playerCoins[playerId][i].addActionListener(this);
+            playerCoins[playerId][i].setBounds(X, 10, 85, 85);
+            playerCoins[playerId][i].setLayout(null);
+            JLabel playerCoinLabel = new JLabel(walletChip[i]);
+            JLabel playerCoinCountTextLabel = new JLabel(Integer.toString(board.player[playerId].wallet.coin[i].count));
+            playerCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            playerCoins[playerId][i].add(playerCoinCountTextLabel);
+            playerCoins[playerId][i].add(playerCoinLabel);
+            playerCoinLabel.setBounds(5, 5, 75, 75);
+            playerCoinCountTextLabel.setBounds(35, 30, 25, 25);
+            panel.add(playerCoins[playerId][i]);
+            X += 95;
+        }
+
+    }
+
+    private void reDraw() {
+
         storePanel.removeAll();
         drawStore(storePanel);
         storePanel.repaint();
@@ -270,12 +395,15 @@ public class GameWindow extends JFrame implements ActionListener {
         drawReserve(reservePanel);
         reservePanel.repaint();
 
+        firstPlayerPanel.removeAll();
+        drawPlayerTable(0, firstPlayerPanel);
+        firstPlayerPanel.repaint();
+
+        secondPlayerPanel.removeAll();
+        drawPlayerTable(1, secondPlayerPanel);
+        secondPlayerPanel.repaint();
+
         this.repaint();
-
-    }
-
-    private void drawPlayerTable(int playerId, JPanel panel) {
-
     }
 
     private void drawReserve(JPanel panel) {
@@ -296,7 +424,7 @@ public class GameWindow extends JFrame implements ActionListener {
         coinButton[5].setBounds(5, 60, 110, 110);
         coinButton[5].setLayout(null);
         JLabel slotChipLabel = new JLabel(goldChip);
-        JLabel slotMachinesCoinCountTextLabel = new JLabel(Integer.toString(board.slotMachines.coin[5].count - board.walletForCoins[5]));
+        JLabel slotMachinesCoinCountTextLabel = new JLabel(Integer.toString(board.slotMachines.coin[5].count));
         slotMachinesCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         coinButton[5].add(slotMachinesCoinCountTextLabel);
         coinButton[5].add(slotChipLabel);
@@ -328,6 +456,7 @@ public class GameWindow extends JFrame implements ActionListener {
         int Y = 60;
         for (int i = 0; i < 5; i++) {
             coinButton[i] = new JButton();
+            coinButton[i].addActionListener(this);
             coinButton[i].setBounds(5, Y, 110, 110);
             coinButton[i].setLayout(null);
             JLabel slotChipLabel = new JLabel(slotChip[i]);
