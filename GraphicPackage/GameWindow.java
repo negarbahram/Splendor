@@ -16,6 +16,7 @@ public class GameWindow extends JFrame implements ActionListener {
     Board board;
 
     JButton[][] cardButton = new JButton[5 + 2][5 + 2];
+
     JButton[] coinButton = new JButton[7 + 2];
 
     JButton[][] playerCoins = new JButton[2 + 1][7 + 2];

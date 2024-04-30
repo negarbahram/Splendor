@@ -2,9 +2,6 @@ import BoardPackage.Board;
 import GraphicPackage.GameWindow;
 import GraphicPackage.StartingWindow;
 
-import javax.swing.*;
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
 

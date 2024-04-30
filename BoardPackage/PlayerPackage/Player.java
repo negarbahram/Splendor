@@ -12,6 +12,7 @@ public class Player {
     // cardCount[cardValue] : Number of cards with the value of cardValue.
 
     public int prizeClawCount;
+
     public Card[] prizeClaw;
 
     public int reserveCount;
@@ -25,8 +26,6 @@ public class Player {
         this.name = name;
 
         this.score = 0;
-
-        score = 0;
 
         Coin[] coins = new Coin[7 + 3];
         // Making a list of coins with their count to creat a wallet.
