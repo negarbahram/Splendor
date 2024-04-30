@@ -6,15 +6,10 @@ public class Player {
 
     public String name;
 
-    public int points;
-
     public Wallet wallet;
 
     public int[] cardCount;
     // cardCount[cardValue] : Number of cards with the value of cardValue.
-
-    public Card[][] cards;
-    // cards[cardValue] : List of cards with the value of cardValue.
 
     public int prizeClawCount;
     public Card[] prizeClaw;
@@ -23,11 +18,15 @@ public class Player {
 
     public Card[] reserve;
 
+    public int score;
+
     public Player(String name) {
 
         this.name = name;
 
-        this.points = 0;
+        this.score = 0;
+
+        score = 0;
 
         Coin[] coins = new Coin[7 + 3];
         // Making a list of coins with their count to creat a wallet.
@@ -49,8 +48,6 @@ public class Player {
 
         for (int i = 0; i <= 5; i++)
             cardCount[i] = 0;
-
-        cards = new Card[7 + 3][50 + 10];
 
         prizeClawCount = 0;
 
@@ -80,8 +77,8 @@ public class Player {
     }
 
     public void addCard(Card card) {
-        cards[card.value][cardCount[card.value]] = card;
         cardCount[card.value]++;
+        score += card.point;
     }
 
     public void addCoins(int[] wallet) {
@@ -90,6 +87,13 @@ public class Player {
     }
 
     public void addReserve(Card card) {
+        reserve[reserveCount] = card;
+        reserveCount++;
+    }
 
+    public void removeReserve(int id) {
+        reserveCount--;
+        for (int i = id; i < reserveCount; i++)
+            reserve[i] = reserve[i + 1];
     }
 }

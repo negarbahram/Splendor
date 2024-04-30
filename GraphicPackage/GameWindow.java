@@ -20,7 +20,9 @@ public class GameWindow extends JFrame implements ActionListener {
 
     JButton[][] playerCoins = new JButton[2 + 1][7 + 2];
 
-    JButton[][][] playerCards = new JButton[2 + 1][7 + 2][47 + 5];
+    JButton[][] playerCards = new JButton[2 + 1][7 + 2];
+
+    JButton[][] reservedCard = new JButton[2 + 1][3 + 2];
 
     JPanel storePanel;
 
@@ -86,9 +88,280 @@ public class GameWindow extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (board.whoWins() != -1) {
-            board.state = 6;
-            this.removeAll();
+        outerLoop : switch (board.state) {
+            case 0:
+
+                if (e.getSource() == storeButton) {
+                    board.state = 1;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(226, 218, 198));
+                    reservePanel.setBackground(new Color(226, 218, 198));
+                }
+                else if (e.getSource() == slotMachinesButton) {
+                    board.emptyWallet();
+                    board.state = 3;
+
+                    storePanel.setBackground(new Color(226, 218, 198));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(226, 218, 198));
+                }
+                else if (e.getSource() == reserveButton) {
+                    board.state = 4;
+
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(226, 218, 198));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+                }
+                else
+                    for (int i = 0; i < board.player[board.turn].reserveCount; i++)
+                        if (e.getSource() == reservedCard[board.turn][i]) {
+                            board.reservedChosenCardId = i;
+                            board.state = 5;
+
+                            storePanel.setBackground(new Color(226, 218, 198));
+                            slotMachinesPanel.setBackground(new Color(226, 218, 198));
+                            reservePanel.setBackground(new Color(226, 218, 198));
+
+                            break outerLoop;
+                        }
+
+                break;
+            case 1:
+
+                if (e.getSource() == cancelButton) {
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                for (int i = 0; i < board.store.cardCount[0]; i++)
+                    if (e.getSource() == cardButton[0][i]) {
+                        if (!board.player[board.turn].isThereEnoughCards(board.store.cards[0][i].price)) {
+                            error = "You do not have enough cards to buy this prize claw.";
+                            break outerLoop;
+                        }
+                        board.getPrizeClaw(i);
+                        board.turn ^= 1;
+                        board.state = 0;
+
+                        storePanel.setBackground(new Color(194, 178, 128));
+                        slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                        reservePanel.setBackground(new Color(210, 180, 140));
+
+                        break outerLoop;
+                    }
+
+
+                for (int i = 1; i <= 3; i++)
+                    for (int j = 0; j < min(4, board.store.cardCount[i]); j++)
+                        if (e.getSource() == cardButton[i][j]) {
+                            if (! board.player[board.turn].wallet.isThereEnoughCoins(board.store.cards[i][j].price)) {
+                                error = "You do not have enough coins to buy this card.";
+
+                                break outerLoop;
+                            }
+                            board.emptyWallet();
+                            board.chosenCardLevel = i;
+                            board.chosenCardId = j;
+                            board.state = 2;
+
+                            storePanel.setBackground(new Color(226, 218, 198));
+                            slotMachinesPanel.setBackground(new Color(226, 218, 198));
+                            reservePanel.setBackground(new Color(226, 218, 198));
+
+                            break outerLoop;
+                        }
+
+                break;
+            case 2:
+
+                if (e.getSource() == cancelButton) {
+                    board.emptyWallet();
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                for (int i = 0; i <= 5; i++)
+                    if (e.getSource() == playerCoins[board.turn][i]) {
+                        if (board.player[board.turn].wallet.coin[i].count - board.walletForCoinsPay[board.turn][i] == 0) {
+                            error = "You do not have enough coins.";
+
+                            break outerLoop;
+                        }
+                        board.walletForCoinsPay[board.turn][i]++;
+                    }
+
+                for (int i = 0; i < 5; i++)
+                    if (e.getSource() == playerCards[board.turn][i]) {
+                        if (board.player[board.turn].cardCount[i] - board.walletForCards[board.turn][i] == 0) {
+                            error = "You do not have enough cards.";
+
+                            break outerLoop;
+                        }
+                        board.walletForCards[board.turn][i]++;
+                    }
+
+                if (board.canBePaid(board.store.cards[board.chosenCardLevel][board.chosenCardId])) {
+                    board.getCard(0);
+                    board.emptyWallet();
+                    board.turn ^= 1;
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                break;
+            case 3:
+
+                if (e.getSource() == cancelButton) {
+                    board.emptyWallet();
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                for (int i = 0; i < 5; i++)
+                    if (e.getSource() == coinButton[i]) {
+                        if (board.slotMachines.coin[i].count - board.walletForCoins[i] == 0) {
+                            error = "There is no coin.";
+
+                            break outerLoop;
+                        }
+
+                        if (board.walletForCoins[i] == 1 && board.slotMachines.coin[i].count < 4) {
+                            error = "You are not allowed to choose this coin.";
+
+                            break outerLoop;
+                        }
+                        if (! board.slotMachines.validCoin(board.walletForCoins, board.walletCoinCnt, i)) {
+                            error = "You are not allowed to choose this coin.";
+
+                            break outerLoop;
+                        }
+
+                        board.walletCoinCnt++;
+                        board.walletForCoins[i]++;
+                    }
+
+                if (board.slotMachines.readyToGet(board.walletForCoins, board.walletCoinCnt)) {
+                    board.getCoins();
+                    board.emptyWallet();
+                    board.turn ^= 1;
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                break;
+            case 4:
+
+                if (board.player[board.turn].reserveCount == 3) {
+                    error = "You can not reserve more than 3 cards.";
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                for (int i = 1; i <= 3; i++)
+                    for (int j = 0; j < min(4, board.store.cardCount[i]); j++)
+                        if (e.getSource() == cardButton[i][j]) {
+                            board.chosenCardLevel = i;
+                            board.chosenCardId = j;
+                            board.getReserve();
+                            board.turn ^= 1;
+                            board.state = 0;
+
+                            storePanel.setBackground(new Color(194, 178, 128));
+                            slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                            reservePanel.setBackground(new Color(210, 180, 140));
+
+                            break outerLoop;
+                        }
+
+                if (e.getSource() == cancelButton) {
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                break;
+            case 5:
+
+                if (e.getSource() == cancelButton) {
+                    board.emptyWallet();
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
+                for (int i = 0; i <= 5; i++)
+                    if (e.getSource() == playerCoins[board.turn][i]) {
+                        if (board.player[board.turn].wallet.coin[i].count - board.walletForCoinsPay[board.turn][i] == 0) {
+                            error = "You do not have enough coins.";
+
+                            break outerLoop;
+                        }
+                        board.walletForCoinsPay[board.turn][i]++;
+                    }
+
+                for (int i = 0; i < 5; i++)
+                    if (e.getSource() == playerCards[board.turn][i]) {
+                        if (board.player[board.turn].cardCount[i] - board.walletForCards[board.turn][i] == 0) {
+                            error = "You do not have enough cards.";
+
+                            break outerLoop;
+                        }
+                        board.walletForCards[board.turn][i]++;
+                    }
+
+                if (board.canBePaid(board.player[board.turn].reserve[board.reservedChosenCardId])) {
+                    board.getCard(1);
+                    board.emptyWallet();
+                    board.turn ^= 1;
+                    board.state = 0;
+
+                    storePanel.setBackground(new Color(194, 178, 128));
+                    slotMachinesPanel.setBackground(new Color(210, 180, 140));
+                    reservePanel.setBackground(new Color(210, 180, 140));
+
+                    break;
+                }
+
         }
 
         if (! error.equals("")) {
@@ -112,246 +385,93 @@ public class GameWindow extends JFrame implements ActionListener {
             error = "";
         }
 
-        switch (board.state) {
-            case 0:
-                storePanel.setBackground(new Color(194, 178, 128));
-                slotMachinesPanel.setBackground(new Color(210, 180, 140));
-                reservePanel.setBackground(new Color(210, 180, 140));
-                firstPlayerPanel.setBackground(new Color(189, 183, 107));
-                secondPlayerPanel.setBackground(new Color(226, 218, 198));
-
-                if (e.getSource() == storeButton)
-                    board.state = 1;
-                else if (e.getSource() == slotMachinesButton) {
-                    board.emptyWallet();
-                    board.state = 3;
-                }
-                else if (e.getSource() == reserveButton)
-                    board.state = 4;
-
-                break;
-            case 1:
-                storePanel.setBackground(new Color(194, 178, 128));
-                slotMachinesPanel.setBackground(new Color(226, 218, 198));
-                reservePanel.setBackground(new Color(226, 218, 198));
-                firstPlayerPanel.setBackground(new Color(226, 218, 198));
-                secondPlayerPanel.setBackground(new Color(226, 218, 198));
-
-                if (e.getSource() == cancelButton) {
-                    board.state = 0;
-                    break;
-                }
-
-                for (int i = 0; i < board.store.cardCount[0]; i++)
-                    if (e.getSource() == cardButton[0][i]) {
-                        if (!board.player[board.turn].isThereEnoughCards(board.store.cards[0][i].price)) {
-                            error = "You do not have enough cards to buy this prize claw.";
-                            continue;
-                        }
-                        board.getPrizeClaw(i);
-                        board.turn ^= 1;
-                        board.state = 0;
-                    }
-
-
-                for (int i = 1; i <= 3; i++)
-                    for (int j = 0; j < min(4, board.store.cardCount[i]); j++)
-                        if (e.getSource() == cardButton[i][j]) {
-                            if (! board.player[board.turn].wallet.isThereEnoughCoins(board.store.cards[i][j].price)) {
-                                error = "You do not have enough coins to buy this card.";
-                                continue;
-                            }
-                            board.emptyWallet();
-                            board.chosenCardLevel = i;
-                            board.chosenCardId = j;
-                            board.state = 2;
-                        }
-
-                break;
-            case 2:
-                storePanel.setBackground(new Color(226, 218, 198));
-                slotMachinesPanel.setBackground(new Color(226, 218, 198));
-                reservePanel.setBackground(new Color(226, 218, 198));
-
-                if (board.canBePaid()) {
-                    board.getCard();
-                    board.emptyWallet();
-                    board.turn ^= 1;
-                    board.state = 0;
-                    break;
-                }
-
-                if (e.getSource() == cancelButton) {
-                    board.emptyWallet();
-                    board.state = 1;
-                    break;
-                }
-
-                switch (board.turn) {
-                    case 0:
-                        firstPlayerPanel.setBackground(new Color(189, 183, 107));
-
-                    break;
-                    case 1:
-                        secondPlayerPanel.setBackground(new Color(189, 183, 107));
-
-                        break;
-                }
-                break;
-            case 3:
-                storePanel.setBackground(new Color(226, 218, 198));
-                slotMachinesPanel.setBackground(new Color(210, 180, 140));
-                reservePanel.setBackground(new Color(226, 218, 198));
-                firstPlayerPanel.setBackground(new Color(226, 218, 198));
-                secondPlayerPanel.setBackground(new Color(226, 218, 198));
-
-                if (board.slotMachines.readyToGet(board.walletForCoins, board.walletCoinCnt)) {
-                    board.getCoins();
-                    board.emptyWallet();
-                    board.turn ^= 1;
-                    board.state = 0;
-                    break;
-                }
-
-                if (e.getSource() == cancelButton) {
-                    board.emptyWallet();
-                    board.state = 0;
-                    break;
-                }
-
-                for (int i = 0; i < 5; i++)
-                    if (e.getSource() == coinButton[i]) {
-                        if (! board.slotMachines.validCoin(board.walletForCoins, board.walletCoinCnt, i)) {
-                            error = "You are not allowed to choose this coin.";
-
-                            break;
-                        }
-
-                        board.walletCoinCnt++;
-                        board.walletForCoins[i]++;
-                    }
-                break;
-            case 4:
-                storePanel.setBackground(new Color(194, 178, 128));
-                slotMachinesPanel.setBackground(new Color(226, 218, 198));
-                reservePanel.setBackground(new Color(210, 180, 140));
-                firstPlayerPanel.setBackground(new Color(226, 218, 198));
-                secondPlayerPanel.setBackground(new Color(226, 218, 198));
-
-                if (board.player[board.turn].reserveCount == 3) {
-                    error = "You can not reserve more than 3 cards.";
-                    board.state = 0;
-                    break;
-                }
-
-                for (int i = 1; i <= 3; i++)
-                    for (int j = 0; j < min(4, board.store.cardCount[i]); j++)
-                        if (e.getSource() == cardButton[i][j]) {
-                            board.chosenCardLevel = i;
-                            board.chosenCardId = j;
-                            board.getReserve();
-                            board.turn ^= 1;
-                            board.state = 0;
-                        }
-
-                if (e.getSource() == cancelButton) {
-                    board.state = 0;
-                    break;
-                }
-                break;
-            case 5:
-
+        if (board.turn == 0) {
+            firstPlayerPanel.setBackground(new Color(189, 183, 107));
+            secondPlayerPanel.setBackground(new Color(226, 218, 198));
+        }
+        else {
+            firstPlayerPanel.setBackground(new Color(226, 218, 198));
+            secondPlayerPanel.setBackground(new Color(189, 183, 107));
         }
 
-        reDraw();
+        if (board.whoWins() != -1) {
+            board.state = 6;
+
+            JFrame endingFrame = new JFrame("Game Ended");
+            endingFrame.setSize(500, 280);
+            endingFrame.setLocationRelativeTo(null);
+            endingFrame.setLayout(null);
+            endingFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+            JLabel label = new JLabel(board.player[board.whoWins()].name + " won!");
+            label.setFont(new Font("Comic Sans MS", Font.PLAIN, 35));
+            label.setBounds(50, 80, 400, 80);
+
+            JPanel panel = new JPanel(null);
+            panel.setBackground(new Color(183,65,14));
+            panel.setBounds(0, 0, 600,280);
+
+            panel.add(label);
+            endingFrame.add(panel);
+
+            endingFrame.setVisible(true);
+        }
+        else
+            reDraw();
 
     }
 
     private void drawPlayerTable(int playerId, JPanel panel) {
-
+        drawScore(playerId, panel);
         drawPlayerCoins(playerId, panel);
         drawPlayerCards(playerId, panel);
+        drawReservedCards(playerId, panel);
+    }
+
+    private void drawScore(int playerId, JPanel panel) {
+        JLabel score = new JLabel(board.player[playerId].score + "/15");
+        score.setFont(new Font("Comic Sans MS", Font.PLAIN, 40));
+        score.setBounds(30, 220, 120, 100);
+        panel.add(score);
+    }
+
+    private void drawReservedCards(int playerId, JPanel panel) {
+        for (int i = 0; i < board.player[playerId].reserveCount; i++) {
+            reservedCard[playerId][i] = new JButton();
+            reservedCard[playerId][i].addActionListener(this);
+            reservedCard[playerId][i].setBounds(160 + i * 140, 195, 132, 176);
+            drawCard(board.player[playerId].reserve[i], reservedCard[playerId][i]);
+            panel.add(reservedCard[playerId][i]);
+        }
     }
 
     private void drawPlayerCards(int playerId, JPanel panel) {
-        int X = 3;
+        ImageIcon[] walletChip = new ImageIcon[7 + 2];
+
+        walletChip[0] = new ImageIcon(getClass().getResource("resources/greenChip75.jpg"));
+        walletChip[1] = new ImageIcon(getClass().getResource("resources/whiteChip75.jpg"));
+        walletChip[2] = new ImageIcon(getClass().getResource("resources/blackChip75.jpg"));
+        walletChip[3] = new ImageIcon(getClass().getResource("resources/blueChip75.jpg"));
+        walletChip[4] = new ImageIcon(getClass().getResource("resources/redChip75.jpg"));
+
+        int X = 7;
         for (int i = 0; i < 5; i++) {
-            int Y = 100;
-            for (int j = 0; j < board.player[playerId].cardCount[i]; j++) {
-                playerCards[playerId][i][j] = new JButton();
-                playerCards[playerId][i][j].addActionListener(this);
-                playerCards[playerId][i][j].setBounds(X, Y, 90, 120);
-                drawCardForPlayer(board.player[playerId].cards[i][j], playerCards[playerId][i][j]);
-                panel.add(playerCards[playerId][i][j]);
-            }
+            playerCards[playerId][i] = new JButton();
+            playerCards[playerId][i].addActionListener(this);
+            playerCards[playerId][i].setBounds(X, 100, 85, 85);
+            playerCards[playerId][i].setLayout(null);
+            JLabel playerCoinLabel = new JLabel(walletChip[i]);
+            JLabel playerCoinCountTextLabel = new JLabel(Integer.toString(board.player[playerId].cardCount[i] - board.walletForCards[playerId][i]));
+            playerCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            playerCards[playerId][i].add(playerCoinCountTextLabel);
+            playerCards[playerId][i].add(playerCoinLabel);
+            playerCoinLabel.setBounds(5, 5, 75, 75);
+            playerCoinCountTextLabel.setBounds(35, 30, 25, 25);
+            panel.add(playerCards[playerId][i]);
+            X += 95;
         }
 
     }
-
-    private void drawCardForPlayer(Card card, JButton button) {
-        button.setLayout(null);
-        drawPointForPayer(card, button);
-        drawPriceForPlayer(card, button);
-        drawValueForPlayer(card, button);
-    }
-
-    void drawPointForPayer(Card card, JButton button) {
-        JLabel pontLabel = new JLabel(Integer.toString(card.point));
-        pontLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 15));
-        button.add(pontLabel);
-        pontLabel.setBounds(0, 0, 50, 50);
-    }
-
-    private void drawPriceForPlayer(Card card, JButton button) {
-        int lastX = 5, lastY = 110;
-
-        ImageIcon[] priceChip = new ImageIcon[7 + 2];
-
-        priceChip[0] = new ImageIcon(getClass().getResource("resources/greenChip15.jpg"));
-        priceChip[1] = new ImageIcon(getClass().getResource("resources/whiteChip15.jpg"));
-        priceChip[2] = new ImageIcon(getClass().getResource("resources/blackChip15.jpg"));
-        priceChip[3] = new ImageIcon(getClass().getResource("resources/blueChip15.jpg"));
-        priceChip[4] = new ImageIcon(getClass().getResource("resources/redChip15.jpg"));
-
-
-        for (int i = 0; i < 5; i++)
-            for (int j = 0; j < card.price[i]; j++) {
-                JLabel priceLabel = new JLabel(priceChip[i]);
-                button.add(priceLabel);
-                priceLabel.setBounds(lastX, lastY, 15, 15);
-                lastX += 16;
-                if (lastX >= 75) {
-                    lastX = 10;
-                    lastY -= 16;
-                }
-            }
-    }
-
-    private void drawValueForPlayer(Card card, JButton button) {
-        ImageIcon valueChip = null;
-        switch (card.value) {
-            case 0:
-                valueChip = new ImageIcon(getClass().getResource("resources/greenChip33.jpg"));
-                break;
-            case 1:
-                valueChip = new ImageIcon(getClass().getResource("resources/whiteChip33.jpg"));
-                break;
-            case 2:
-                valueChip = new ImageIcon(getClass().getResource("resources/blackChip33.jpg"));
-                break;
-            case 3:
-                valueChip = new ImageIcon(getClass().getResource("resources/blueChip33.jpg"));
-                break;
-            case 4:
-                valueChip = new ImageIcon(getClass().getResource("resources/redChip33.jpg"));
-                break;
-        }
-
-        JLabel valeLabel = new JLabel(valueChip);
-        button.add(valeLabel);
-        valeLabel.setBounds(53, 5, 33, 33);
-    }
-
     private void drawPlayerCoins(int playerId, JPanel panel) {
         ImageIcon[] walletChip = new ImageIcon[7 + 2];
 
@@ -369,7 +489,7 @@ public class GameWindow extends JFrame implements ActionListener {
             playerCoins[playerId][i].setBounds(X, 10, 85, 85);
             playerCoins[playerId][i].setLayout(null);
             JLabel playerCoinLabel = new JLabel(walletChip[i]);
-            JLabel playerCoinCountTextLabel = new JLabel(Integer.toString(board.player[playerId].wallet.coin[i].count));
+            JLabel playerCoinCountTextLabel = new JLabel(Integer.toString(board.player[playerId].wallet.coin[i].count - board.walletForCoinsPay[playerId][i]));
             playerCoinCountTextLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
             playerCoins[playerId][i].add(playerCoinCountTextLabel);
             playerCoins[playerId][i].add(playerCoinLabel);

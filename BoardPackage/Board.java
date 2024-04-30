@@ -30,11 +30,15 @@ public class Board {
 
     public int[] walletForCoins;
 
-    public int[] walletForCards;
+    public int[][] walletForCoinsPay;
+
+    public int[][] walletForCards;
 
     public int chosenCardLevel;
 
     public int chosenCardId;
+
+    public int reservedChosenCardId;
 
     public Board(String firstPlayer, String secondPlayer) {
 
@@ -72,15 +76,17 @@ public class Board {
 
         walletForCoins = new int[5 + 2];
 
-        walletForCards = new int[5 + 2];
+        walletForCards = new int[3][5 + 2];
+
+        walletForCoinsPay = new int[3][5 + 2];
     }
 
     public int whoWins() {
 
-        if (player[0].points >= 15)
+        if (player[0].score >= 5)
             return 0;
 
-        if (player[1].points >= 15)
+        if (player[1].score >= 5)
             return 1;
 
         return -1;
@@ -91,11 +97,20 @@ public class Board {
         store.removePrizeClaw(id);
     }
 
-    public void getCard() {
-        player[turn].payThePrice(walletForCoins);
-        player[turn].addCard(store.cards[chosenCardLevel][chosenCardId]);
-        store.removeCard(chosenCardLevel, chosenCardId);
-        slotMachines.addCoin(walletForCoins);
+    public void getCard(int type) {
+        Card card;
+        if (type == 0)
+            card = store.cards[chosenCardLevel][chosenCardId];
+        else
+            card = player[turn].reserve[reservedChosenCardId];
+
+        player[turn].payThePrice(walletForCoinsPay[turn]);
+        player[turn].addCard(card);
+        if (type == 0)
+            store.removeCard(chosenCardLevel, chosenCardId);
+        else
+            player[turn].removeReserve(reservedChosenCardId);
+        slotMachines.addCoin(walletForCoinsPay[turn]);
     }
 
     public void emptyWallet() {
@@ -103,18 +118,21 @@ public class Board {
         walletCoinCnt = 0;
         for (int i = 0; i <= 5; i++) {
             walletForCoins[i] = 0;
-            walletForCards[i] = 0;
+            walletForCards[0][i] = 0;
+            walletForCards[1][i] = 0;
+            walletForCoinsPay[0][i] = 0;
+            walletForCoinsPay[1][i] = 0;
         }
     }
 
-    public boolean canBePaid() {
+    public boolean canBePaid(Card card) {
 
         int goldCoinsInUse = 0;
         for (int i = 0; i < 5; i++)
-            if (walletForCoins[i] + walletForCards[i] < store.cards[chosenCardLevel][chosenCardId].price[i])
-                goldCoinsInUse += store.cards[chosenCardLevel][chosenCardId].price[i] - walletForCoins[i] - walletForCards[i];
+            if (walletForCoinsPay[turn][i] + walletForCards[turn][i] < card.price[i])
+                goldCoinsInUse += card.price[i] - walletForCoinsPay[turn][i] - walletForCards[turn][i];
 
-        return goldCoinsInUse <= walletForCoins[5]? true: false;
+        return goldCoinsInUse <= walletForCoinsPay[turn][5]? true: false;
     }
 
     public void getCoins() {
